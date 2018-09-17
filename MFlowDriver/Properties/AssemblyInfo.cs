@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("MFlowDriver")]
 [assembly: AssemblyDescription("WPF页面流程驱动")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("LiangZM")]
+[assembly: AssemblyCompany("LiangMing")]
 [assembly: AssemblyProduct("MFlowDriver")]
-[assembly: AssemblyCopyright("Copyright © LiangZM 2018")]
+[assembly: AssemblyCopyright("Copyright © LiangMing 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
