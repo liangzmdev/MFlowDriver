@@ -19,6 +19,11 @@ namespace MFlowDriver
         /// </summary>
         public MFlowDict NextPages { get; set; }
 
+        /// <summary>
+        /// 流程页面实例
+        /// </summary>
+        public MPage Instance { get; set; }
+
         private Type pageType;
 
         /// <summary>
@@ -55,7 +60,7 @@ namespace MFlowDriver
 
     public class MTimeout
     {
-        public static int Nerver { get; } = int.MinValue;
+        public static int Forever { get; } = int.MinValue;
         public static int Default { get; } = 60;
     }
 }

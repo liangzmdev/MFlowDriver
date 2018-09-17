@@ -44,5 +44,17 @@ namespace MFlowDriver
             flowElmentDict.Add(identityName2, pageElementName2);
             flowElmentDict.Add(identityName3, pageElementName3);
         }
+
+        public string this[string identityName] { get => flowElmentDict[identityName]; set => flowElmentDict[identityName] = value; }
+
+        /// <summary>
+        /// 是否包含指定的页面标识名称
+        /// </summary>
+        /// <param name="identityName">页面标识名称</param>
+        /// <returns></returns>
+        public bool HasIdentityName(string identityName)
+        {
+            return flowElmentDict.ContainsKey(identityName);
+        }
     }
 }
