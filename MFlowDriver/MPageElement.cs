@@ -2,6 +2,9 @@
 
 namespace MFlowDriver
 {
+    /// <summary>
+    /// MPageElement
+    /// </summary>
     public class MPageElement
     {
         /// <summary>
@@ -42,25 +45,55 @@ namespace MFlowDriver
             }
         }
 
+        /// <summary>
+        /// Of
+        /// </summary>
+        /// <param name="name">页面名称</param>
+        /// <param name="pageType">页面类型</param>
+        /// <param name="timeout">超时时间</param>
+        /// <param name="nextPages">子页面集合</param>
+        /// <returns>MPageElement</returns>
         public static MPageElement Of(string name, Type pageType, int timeout, MFlowDict nextPages)
         {
             return new MPageElement() { Name = name, PageType = pageType, Timeout = timeout, NextPages = nextPages};
         }
 
+        /// <summary>
+        /// Of
+        /// </summary>
+        /// <param name="name">页面名称</param>
+        /// <param name="pageType">页面类型</param>
+        /// <returns>MPageElement</returns>
         public static MPageElement Of(string name, Type pageType)
         {
             return Of(name, pageType, int.MinValue, null);
         }
 
+        /// <summary>
+        /// Of
+        /// </summary>
+        /// <param name="name">页面名称</param>
+        /// <param name="pageType">页面类型</param>
+        /// <param name="timeout">超时时间</param>
+        /// <returns>MPageElement</returns>
         public static MPageElement Of(string name, Type pageType, int timeout)
         {
             return Of(name, pageType, timeout, null);
         }
     }
 
+    /// <summary>
+    /// MTimeout
+    /// </summary>
     public class MTimeout
     {
+        /// <summary>
+        /// 永久
+        /// </summary>
         public static int Forever { get; } = int.MinValue;
+        /// <summary>
+        /// 默认 60s
+        /// </summary>
         public static int Default { get; } = 60;
     }
 }

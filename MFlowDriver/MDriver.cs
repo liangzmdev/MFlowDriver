@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -6,6 +7,9 @@ using System.Windows.Controls;
 
 namespace MFlowDriver
 {
+    /// <summary>
+    /// MDriver
+    /// </summary>
     public class MDriver
     {
         private static MFlow flow = null;
@@ -13,9 +17,10 @@ namespace MFlowDriver
         private static object messager = null;
         private static Panel container = null;
         private static string mainPageName = string.Empty;
+        private static LinkedList<string> pageHistories = new LinkedList<string>();
 
         private static int timeCount;
-        public static int TimeCount
+        private static int TimeCount
         {
             get => timeCount;
             set
@@ -87,7 +92,7 @@ namespace MFlowDriver
                     var page = Activator.CreateInstance(pageEle.PageType) as MPage;
                     pageEle.Instance = page;
                 }
-
+                
                 dynamic nextPage = pageEle.Instance;
                 dynamic currentPage = currentPageEle?.Instance;
 
@@ -100,8 +105,18 @@ namespace MFlowDriver
                 if (pageName == mainPageName)
                 {
                     nextPage.PartFlowData.Clear();
+                    pageHistories.Clear();
                 }
 
+                pageHistories.AddLast(pageName);
+
+                nextPage.GotoPreviousPage = (Action)(() =>
+                {
+                    if (pageHistories.Count > 1)
+                    {
+                        GotoPageByPageName(pageHistories.Last.Previous.Value);
+                    }
+                });
                 nextPage.GotoNextPage = (Action<string>)(identityName => GotoPageByIdentityName(identityName, pageEle));
                 nextPage.GotoSuccessPage = (Action)(() => GotoPageByIdentityName(MFlow.IDNENTITY_NAME_SUCCESS, pageEle));
                 nextPage.GotoFailurePage = (Action)(() => GotoPageByIdentityName(MFlow.IDNENTITY_NAME_FAILURE, pageEle));

@@ -4,18 +4,37 @@ using System.Linq;
 
 namespace MFlowDriver
 {
+    /// <summary>
+    /// MFlow
+    /// </summary>
     public class MFlow
     {
+        /// <summary>
+        /// SUCCESS
+        /// </summary>
         public const string IDNENTITY_NAME_SUCCESS = "SUCCESS";
+        /// <summary>
+        /// FAILURE
+        /// </summary>
         public const string IDNENTITY_NAME_FAILURE = "FAILURE";
+        /// <summary>
+        /// EXCEPTION
+        /// </summary>
         public const string IDNENTITY_NAME_EXCEPTION = "EXCEPTION";
 
         private List<MPageElement> mPages = new List<MPageElement>();
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public MFlow()
         {
         }
 
+        /// <summary>
+        /// Of
+        /// </summary>
+        /// <returns></returns>
         public static MFlow Of()
         {
             return new MFlow();
@@ -119,6 +138,11 @@ namespace MFlowDriver
             return mPages.Any(page => page.Name == name);
         }
 
+        /// <summary>
+        /// 索引获取
+        /// </summary>
+        /// <param name="name">页面名称</param>
+        /// <returns></returns>
         public MPageElement this[string name] { get => GetPage(name); }
     }
 }

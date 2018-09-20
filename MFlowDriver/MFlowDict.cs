@@ -2,6 +2,9 @@
 
 namespace MFlowDriver
 {
+    /// <summary>
+    /// MFlowDict
+    /// </summary>
     public class MFlowDict
     {
         private Dictionary<string, string> flowElmentDict = new Dictionary<string, string>();
@@ -45,6 +48,11 @@ namespace MFlowDriver
             flowElmentDict.Add(identityName3, pageElementName3);
         }
 
+        /// <summary>
+        /// 索引获取
+        /// </summary>
+        /// <param name="identityName">标识名称</param>
+        /// <returns></returns>
         public string this[string identityName] { get => flowElmentDict[identityName]; set => flowElmentDict[identityName] = value; }
 
         /// <summary>
