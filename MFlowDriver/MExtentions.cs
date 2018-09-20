@@ -4,6 +4,9 @@ using System.Windows;
 
 namespace MFlowDriver
 {
+    /// <summary>
+    /// MFlowExtentions
+    /// </summary>
     public static class MFlowExtentions
     {
         /// <summary>
@@ -17,6 +20,13 @@ namespace MFlowDriver
             return p == null ? obj : GetTopElement(p);
         }
 
+        /// <summary>
+        /// 获取属性名称
+        /// </summary>
+        /// <typeparam name="TV">TV</typeparam>
+        /// <typeparam name="TP">TP</typeparam>
+        /// <param name="expression">expression</param>
+        /// <returns></returns>
         public static string GetPropertyName<TV, TP>(this Expression<Func<TV, TP>> expression)
         {
             var propertyName = string.Empty;
