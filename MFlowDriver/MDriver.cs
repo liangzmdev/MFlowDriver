@@ -14,12 +14,12 @@ namespace MFlowDriver
     {
         private static MFlow flow = null;
         private static MPageElement currentPageEle;
-        private static object messager = null;
         private static Panel container = null;
         private static string mainPageName = string.Empty;
         private static LinkedList<string> pageHistories = new LinkedList<string>();
 
         private static int timeCount;
+
         private static int TimeCount
         {
             get => timeCount;
@@ -92,12 +92,11 @@ namespace MFlowDriver
                     var page = Activator.CreateInstance(pageEle.PageType) as MPage;
                     pageEle.Instance = page;
                 }
-                
+
                 dynamic nextPage = pageEle.Instance;
                 dynamic currentPage = currentPageEle?.Instance;
 
                 nextPage.CurrentPage = pageEle;
-                nextPage.Messager = MDriver.messager;
 
                 nextPage.PartFlowData = currentPage?.PartFlowData ?? new MFlowData();
                 nextPage.GlobalFlowData = currentPage?.GlobalFlowData ?? new MFlowData();
@@ -142,11 +141,5 @@ namespace MFlowDriver
             var pageName = pageEle.NextPages[identityName];
             GotoPageByPageName(pageName);
         }
-
-        /// <summary>
-        /// 注册消息提供者
-        /// </summary>
-        /// <param name="messager">消息提供者</param>
-        public static void RegistMessager(object messager) => MDriver.messager = messager;
     }
 }
