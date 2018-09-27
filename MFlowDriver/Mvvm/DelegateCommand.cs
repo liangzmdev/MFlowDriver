@@ -9,8 +9,8 @@ namespace MFlowDriver.Mvvm
     /// <typeparam name="T">T</typeparam>
     public class DelegateCommand<T> : ICommand
     {
-        readonly Action<T> execute;
-        readonly Predicate<T> canExecute;
+        private readonly Action<T> execute;
+        private readonly Predicate<T> canExecute;
 
         /// <summary>
         /// Constructor
@@ -70,8 +70,8 @@ namespace MFlowDriver.Mvvm
     /// </summary>
     public class DelegateCommand : ICommand
     {
-        readonly Action execute;
-        readonly Func<bool> canExecute;
+        private readonly Action execute;
+        private readonly Func<bool> canExecute;
 
         /// <summary>
         /// Constuctor

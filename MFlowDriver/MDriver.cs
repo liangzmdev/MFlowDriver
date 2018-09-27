@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -17,6 +18,7 @@ namespace MFlowDriver
         private static Panel container = null;
         private static string mainPageName = string.Empty;
         private static LinkedList<string> pageHistories = new LinkedList<string>();
+        private static List<Tuple<string, Type, object>> components = new List<Tuple<string, Type, object>>();
 
         private static int timeCount;
 
@@ -41,9 +43,39 @@ namespace MFlowDriver
             MDriver.container = container;
             MDriver.flow = flow;
             MDriver.mainPageName = mainPageName;
+            InitAllPage();
             GotoPageByPageName(mainPageName);
             StartTimer();
             RegistClickEvent();
+        }
+
+        private static void InitAllPage()
+        {
+            var partFlowData = new MFlowData();
+            var globalFlowData = new MFlowData();
+            flow.AllPages.ForEach(e =>
+            {
+                var page = Activator.CreateInstance(e.PageType) as MPage;
+                page.CurrentPage = e;
+                page.PartFlowData = partFlowData;
+                page.GlobalFlowData = globalFlowData;
+
+                page.GotoPreviousPage = () =>
+                {
+                    if (pageHistories.Count > 1)
+                    {
+                        GotoPageByPageName(pageHistories.Last.Previous.Value);
+                    }
+                };
+
+                page.GotoNextPage = identityName => GotoPageByIdentityName(identityName, e);
+                page.GotoSuccessPage = () => GotoPageByIdentityName(MFlow.IDNENTITY_NAME_SUCCESS, e);
+                page.GotoFailurePage = () => GotoPageByIdentityName(MFlow.IDNENTITY_NAME_FAILURE, e);
+                page.GotoExceptionPage = () => GotoPageByIdentityName(MFlow.IDNENTITY_NAME_EXCEPTION, e);
+                page.GotoMainPage = () => GotoPageByPageName(MDriver.mainPageName);
+
+                e.Instance = page;
+            });
         }
 
         private static void RegistClickEvent()
@@ -87,19 +119,8 @@ namespace MFlowDriver
                 }
                 var pageEle = flow[pageName];
 
-                if (pageEle.Instance == null)
-                {
-                    var page = Activator.CreateInstance(pageEle.PageType) as MPage;
-                    pageEle.Instance = page;
-                }
-
-                dynamic nextPage = pageEle.Instance;
-                dynamic currentPage = currentPageEle?.Instance;
-
-                nextPage.CurrentPage = pageEle;
-
-                nextPage.PartFlowData = currentPage?.PartFlowData ?? new MFlowData();
-                nextPage.GlobalFlowData = currentPage?.GlobalFlowData ?? new MFlowData();
+                var nextPage = pageEle.Instance;
+                var currentPage = currentPageEle?.Instance;
 
                 if (pageName == mainPageName)
                 {
@@ -109,21 +130,8 @@ namespace MFlowDriver
 
                 pageHistories.AddLast(pageName);
 
-                nextPage.GotoPreviousPage = (Action)(() =>
-                {
-                    if (pageHistories.Count > 1)
-                    {
-                        GotoPageByPageName(pageHistories.Last.Previous.Value);
-                    }
-                });
-                nextPage.GotoNextPage = (Action<string>)(identityName => GotoPageByIdentityName(identityName, pageEle));
-                nextPage.GotoSuccessPage = (Action)(() => GotoPageByIdentityName(MFlow.IDNENTITY_NAME_SUCCESS, pageEle));
-                nextPage.GotoFailurePage = (Action)(() => GotoPageByIdentityName(MFlow.IDNENTITY_NAME_FAILURE, pageEle));
-                nextPage.GotoExceptionPage = (Action)(() => GotoPageByIdentityName(MFlow.IDNENTITY_NAME_EXCEPTION, pageEle));
-                nextPage.GotoMainPage = (Action)(() => GotoPageByPageName(MDriver.mainPageName));
-
                 currentPage?.MDispose();
-                nextPage?.MInit();
+                nextPage.MInit();
 
                 currentPageEle = pageEle;
                 TimeCount = pageEle.Timeout;
@@ -140,6 +148,45 @@ namespace MFlowDriver
             }
             var pageName = pageEle.NextPages[identityName];
             GotoPageByPageName(pageName);
+        }
+
+        /// <summary>
+        /// 注册组件
+        /// </summary>
+        /// <param name="component">组件实例</param>
+        /// <param name="name">组件名称</param>
+        public static void RegistComponent(object component, string name = null)
+        {
+            if (components.Any(e => e.Item1 == name && name != null))
+            {
+                throw MFlowException.Of("存在同名组件");
+            }
+
+            if (name == null)
+            {
+                var cpn = components.Where(e => e.Item2 == component.GetType());
+                if (cpn.Any())
+                {
+                    components.Remove(cpn.First());
+                }
+                components.Add(new Tuple<string, Type, object>(null, component.GetType(), component));
+            }
+            else
+            {
+                components.Add(new Tuple<string, Type, object>(name, component.GetType(), component));
+            }
+        }
+
+        /// <summary>
+        /// 获取组件
+        /// </summary>
+        /// <typeparam name="T">组件类型</typeparam>
+        /// <param name="name">组件名称</param>
+        /// <returns>组件实例</returns>
+        public static T GetComponent<T>(string name = null)
+        {
+            var cpn = components.Where(e => e.Item1 == name && e.Item2 == typeof(T)).LastOrDefault();
+            return cpn != null ? (T)cpn.Item3 : default(T);
         }
     }
 }

@@ -55,7 +55,7 @@ namespace MFlowDriver
         /// <returns>MPageElement</returns>
         public static MPageElement Of(string name, Type pageType, int timeout, MFlowDict nextPages)
         {
-            return new MPageElement() { Name = name, PageType = pageType, Timeout = timeout, NextPages = nextPages};
+            return new MPageElement() { Name = name, PageType = pageType, Timeout = timeout, NextPages = nextPages };
         }
 
         /// <summary>
@@ -91,6 +91,7 @@ namespace MFlowDriver
         /// 永久
         /// </summary>
         public static int Forever { get; } = int.MinValue;
+
         /// <summary>
         /// 默认 60s
         /// </summary>

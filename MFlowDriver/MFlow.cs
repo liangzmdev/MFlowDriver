@@ -13,16 +13,21 @@ namespace MFlowDriver
         /// SUCCESS
         /// </summary>
         public const string IDNENTITY_NAME_SUCCESS = "SUCCESS";
+
         /// <summary>
         /// FAILURE
         /// </summary>
         public const string IDNENTITY_NAME_FAILURE = "FAILURE";
+
         /// <summary>
         /// EXCEPTION
         /// </summary>
         public const string IDNENTITY_NAME_EXCEPTION = "EXCEPTION";
 
-        private List<MPageElement> mPages = new List<MPageElement>();
+        /// <summary>
+        /// 所有页面元素
+        /// </summary>
+        public List<MPageElement> AllPages { get; } = new List<MPageElement>();
 
         /// <summary>
         /// Constructor
@@ -50,7 +55,7 @@ namespace MFlowDriver
             {
                 throw MFlowException.Of("已存在此页面");
             }
-            mPages.Add(element);
+            AllPages.Add(element);
         }
 
         /// <summary>
@@ -62,7 +67,7 @@ namespace MFlowDriver
         /// <param name="nextPages">后面页面对应关系</param>
         public void Add(string name, Type pageType, int timeout, MFlowDict nextPages)
         {
-            Add(MPageElement.Of(name, pageType, timeout, nextPages)); 
+            Add(MPageElement.Of(name, pageType, timeout, nextPages));
         }
 
         /// <summary>
@@ -120,13 +125,13 @@ namespace MFlowDriver
         /// <returns></returns>
         public MPageElement GetPage(string name)
         {
-            return mPages.Where(page => page.Name == name).FirstOrDefault();
+            return AllPages.Where(page => page.Name == name).FirstOrDefault();
         }
 
         /// <summary>
         /// 清除所有流程页面
         /// </summary>
-        public void Clear() => mPages.Clear();
+        public void Clear() => AllPages.Clear();
 
         /// <summary>
         /// 是否包含该页面
@@ -135,7 +140,7 @@ namespace MFlowDriver
         /// <returns></returns>
         public bool Has(string name)
         {
-            return mPages.Any(page => page.Name == name);
+            return AllPages.Any(page => page.Name == name);
         }
 
         /// <summary>

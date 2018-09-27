@@ -67,5 +67,16 @@ namespace MFlowDriver
         /// </summary>
         /// <param name="timeCount"></param>
         public virtual void TimeChange(int timeCount) { }
+
+        /// <summary>
+        /// 获取组件
+        /// </summary>
+        /// <typeparam name="T">组件类型</typeparam>
+        /// <param name="name">组件名称</param>
+        /// <returns>组件实例</returns>
+        public T GetComponent<T>(string name = null)
+        {
+            return MDriver.GetComponent<T>(name);
+        }
     }
 }

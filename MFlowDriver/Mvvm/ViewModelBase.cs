@@ -10,7 +10,7 @@ namespace MFlowDriver.Mvvm
     /// </summary>
     public class ViewModelBase : INotifyPropertyChanged
     {
-        readonly Dictionary<string, object> fieldsDict = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> fieldsDict = new Dictionary<string, object>();
 
         /// <summary>
         /// PropertyChanged
