@@ -44,7 +44,7 @@ namespace MFlowDriver
             MDriver.flow = flow;
             MDriver.mainPageName = mainPageName;
             InitAllPage();
-            GotoPageByPageName(mainPageName);
+            GotoPageByPageName(mainPageName, false);
             StartTimer();
             RegistClickEvent();
         }
@@ -64,7 +64,7 @@ namespace MFlowDriver
                 {
                     if (pageHistories.Count > 1)
                     {
-                        GotoPageByPageName(pageHistories.Last.Previous.Value);
+                        GotoPageByPageName(pageHistories.Last.Previous.Value, true);
                     }
                 };
 
@@ -72,7 +72,7 @@ namespace MFlowDriver
                 page.GotoSuccessPage = () => GotoPageByIdentityName(MFlow.IDNENTITY_NAME_SUCCESS, e);
                 page.GotoFailurePage = () => GotoPageByIdentityName(MFlow.IDNENTITY_NAME_FAILURE, e);
                 page.GotoExceptionPage = () => GotoPageByIdentityName(MFlow.IDNENTITY_NAME_EXCEPTION, e);
-                page.GotoMainPage = () => GotoPageByPageName(MDriver.mainPageName);
+                page.GotoMainPage = () => GotoPageByPageName(MDriver.mainPageName, false);
 
                 e.Instance = page;
             });
@@ -99,7 +99,7 @@ namespace MFlowDriver
                     Thread.Sleep(1000);
                     if (TimeCount == 0)
                     {
-                        GotoPageByPageName(mainPageName);
+                        GotoPageByPageName(mainPageName, false);
                     }
                     else if (TimeCount > 0)
                     {
@@ -109,7 +109,7 @@ namespace MFlowDriver
             });
         }
 
-        private static void GotoPageByPageName(string pageName)
+        private static void GotoPageByPageName(string pageName, bool isPreviousPage)
         {
             container.Dispatcher.Invoke(() =>
             {
@@ -126,9 +126,19 @@ namespace MFlowDriver
                 {
                     nextPage.PartFlowData.Clear();
                     pageHistories.Clear();
+                    pageHistories.AddLast(pageName);
                 }
-
-                pageHistories.AddLast(pageName);
+                else
+                {
+                    if (!isPreviousPage)
+                    {
+                        pageHistories.AddLast(pageName);
+                    }
+                    else
+                    {
+                        pageHistories.RemoveLast();
+                    }
+                }
 
                 currentPage?.MDispose();
                 nextPage.MInit();
@@ -147,7 +157,7 @@ namespace MFlowDriver
                 throw MFlowException.Of($"不包含此页面标识名称:{identityName}");
             }
             var pageName = pageEle.NextPages[identityName];
-            GotoPageByPageName(pageName);
+            GotoPageByPageName(pageName, false);
         }
 
         /// <summary>
