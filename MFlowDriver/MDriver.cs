@@ -19,6 +19,7 @@ namespace MFlowDriver
         private static string mainPageName = string.Empty;
         private static LinkedList<string> pageHistories = new LinkedList<string>();
         private static List<Tuple<string, Type, object>> components = new List<Tuple<string, Type, object>>();
+        private static List<MPageElement> tplPages = new List<MPageElement>();
 
         private static int timeCount;
 
@@ -197,6 +198,20 @@ namespace MFlowDriver
         {
             var cpn = components.Where(e => e.Item1 == name && e.Item2 == typeof(T)).LastOrDefault();
             return cpn != null ? (T)cpn.Item3 : default(T);
+        }
+
+        /// <summary>
+        /// 注册模板页面
+        /// </summary>
+        /// <param name="name">模板名称</param>
+        /// <param name="type">模板类型</param>
+        public static void RegistTplPage(string name, Type type)
+        {
+            if (tplPages.Any(e => e.Name == name))
+            {
+                throw MFlowException.Of("存在同名模板页面");
+            }
+            tplPages.Add(MPageElement.Of(name, type));
         }
     }
 }
