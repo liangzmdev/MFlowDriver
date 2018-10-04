@@ -63,6 +63,11 @@ namespace MFlowDriver
         public virtual void MDispose() { }
 
         /// <summary>
+        /// 初始化命令
+        /// </summary>
+        public virtual void InitCommands() { }
+
+        /// <summary>
         /// 超时时间变化调用
         /// </summary>
         /// <param name="timeCount"></param>
@@ -77,6 +82,15 @@ namespace MFlowDriver
         public T GetComponent<T>(string name = null)
         {
             return MDriver.GetComponent<T>(name);
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public MPage()
+        {
+            InitCommands();
+            DataContext = this;
         }
     }
 }
