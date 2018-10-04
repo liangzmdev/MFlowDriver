@@ -19,7 +19,11 @@ namespace MFlowDriver
         private static string mainPageName = string.Empty;
         private static LinkedList<string> pageHistories = new LinkedList<string>();
         private static List<Tuple<string, Type, object>> components = new List<Tuple<string, Type, object>>();
-        private static List<MPageElement> tplPages = new List<MPageElement>();
+
+        /// <summary>
+        /// 倒计时事件
+        /// </summary>
+        public static event Action<int> TimeCountDownHandler;
 
         private static int timeCount;
 
@@ -30,6 +34,7 @@ namespace MFlowDriver
             {
                 timeCount = value;
                 currentPageEle?.Instance?.TimeChange(value < 0 ? 0 : value);
+                TimeCountDownHandler?.Invoke(value);
             }
         }
 
@@ -73,7 +78,7 @@ namespace MFlowDriver
                 page.GotoSuccessPage = () => GotoPageByIdentityName(MFlow.IDNENTITY_NAME_SUCCESS, e);
                 page.GotoFailurePage = () => GotoPageByIdentityName(MFlow.IDNENTITY_NAME_FAILURE, e);
                 page.GotoExceptionPage = () => GotoPageByIdentityName(MFlow.IDNENTITY_NAME_EXCEPTION, e);
-                page.GotoMainPage = () => GotoPageByPageName(MDriver.mainPageName, false);
+                page.GotoMainPage = GotoMainPage;
 
                 e.Instance = page;
             });
@@ -162,6 +167,23 @@ namespace MFlowDriver
         }
 
         /// <summary>
+        /// 跳转到指定页面
+        /// </summary>
+        /// <param name="pageName">页面名称</param>
+        public static void GotoPageByPageName(string pageName)
+        {
+            GotoPageByPageName(pageName, false);
+        }
+
+        /// <summary>
+        /// 跳转到主页面
+        /// </summary>
+        public static void GotoMainPage()
+        {
+            GotoPageByPageName(mainPageName);
+        }
+
+        /// <summary>
         /// 注册组件
         /// </summary>
         /// <param name="component">组件实例</param>
@@ -198,20 +220,6 @@ namespace MFlowDriver
         {
             var cpn = components.Where(e => e.Item1 == name && e.Item2 == typeof(T)).LastOrDefault();
             return cpn != null ? (T)cpn.Item3 : default(T);
-        }
-
-        /// <summary>
-        /// 注册模板页面
-        /// </summary>
-        /// <param name="name">模板名称</param>
-        /// <param name="type">模板类型</param>
-        public static void RegistTplPage(string name, Type type)
-        {
-            if (tplPages.Any(e => e.Name == name))
-            {
-                throw MFlowException.Of("存在同名模板页面");
-            }
-            tplPages.Add(MPageElement.Of(name, type));
         }
     }
 }
