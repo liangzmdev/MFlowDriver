@@ -9,14 +9,16 @@ namespace MFlowDriver.Mvvm
     /// </summary>
     public class CommandHelper
     {
+        private static RoutedEventHandler routedEventHandler = new RoutedEventHandler(OnEventRaised);
+
         private static void OnEventRaised(object sender, RoutedEventArgs arg)
         {
             if (sender is DependencyObject dependencyObject)
             {
                 ICommand command = GetBindingCommand(dependencyObject);
-                if (command.CanExecute(arg))
+                if (command != null && command.CanExecute(arg))
                 {
-                    command.Execute(arg);
+                    command?.Execute(arg);
                 }
             }
         }
@@ -78,6 +80,10 @@ namespace MFlowDriver.Mvvm
             if (d is UIElement uiElement)
             {
                 var eventName = e.NewValue.ToString();
+                if (string.IsNullOrWhiteSpace(eventName))
+                {
+                    return;
+                }
                 var eventNameArr = eventName.ToString().Split('.');
                 var events = EventManager.GetRoutedEvents();
                 RoutedEvent routedEvent = null;
@@ -89,7 +95,10 @@ namespace MFlowDriver.Mvvm
                 {
                     routedEvent = events.FirstOrDefault(ev => ev.Name == eventNameArr[0]);
                 }
-                uiElement.AddHandler(routedEvent, new RoutedEventHandler(OnEventRaised));
+                if (routedEvent != null)
+                {
+                    uiElement.AddHandler(routedEvent, routedEventHandler);
+                }
             }
         }
     }
