@@ -36,5 +36,26 @@ namespace MFlowDriver
             }
             return propertyName;
         }
+
+        /// <summary>
+        /// 返回当前程序域中指定名称的找到的第一个类型
+        /// </summary>
+        /// <param name="className">类名</param>
+        /// <returns></returns>
+        public static Type GetClassType(this string className)
+        {
+            var asmArr = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (var asm in asmArr)
+            {
+                foreach (var type in asm.GetTypes())
+                {
+                    if (type.Name == className)
+                    {
+                        return type;
+                    }
+                }
+            }
+            return null;
+        }
     }
 }
