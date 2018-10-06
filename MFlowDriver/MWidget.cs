@@ -52,5 +52,19 @@ namespace MFlowDriver
             fieldsDict[propertyName] = value;
             OnPropertyChanged(propertyName);
         }
+
+        /// <summary>
+        /// 初始化命令
+        /// </summary>
+        public virtual void InitCommands() { }
+
+        /// <summary>
+        /// MWidget Constructor
+        /// </summary>
+        public MWidget()
+        {
+            InitCommands();
+            DataContext = this;
+        }
     }
 }
