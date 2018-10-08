@@ -113,11 +113,21 @@ namespace MFlowDriver
         /// </summary>
         /// <param name="isBottom">是否显示到底层</param>
         /// <returns>MWidget</returns>
-        public MWidget ShowWidget<T>(bool isBottom = false) where T : MWidget
+        public T ShowWidget<T>(bool isBottom = false) where T : MWidget
         {
             var widget = GetComponent<T>();
             widget.ShowWidget(isBottom);
             return widget;
+        }
+
+        /// <summary>
+        /// 获取Widget
+        /// </summary>
+        /// <typeparam name="T">组件类型</typeparam>
+        /// <returns>组件实例</returns>
+        public T GetWidget<T>() where T : MWidget
+        {
+            return GetComponent<T>();
         }
 
         /// <summary>

@@ -244,7 +244,7 @@ namespace MFlowDriver
             {
                 components.Remove(cpn.First());
             }
-            components.Add(new ComponentMetadata() { Type = componentType, LifeTime = lifeTime });
+            components.Add(new ComponentMetadata() { Type = componentType, LifeTime = lifeTime, Instance = Activator.CreateInstance(componentType) });
         }
 
         /// <summary>
@@ -252,7 +252,7 @@ namespace MFlowDriver
         /// </summary>
         /// <typeparam name="T">Widget类型</typeparam>
         /// <param name="lifeTime">生命周期</param>
-        public static void RegistWidget<T>(LifeTime lifeTime = LifeTime.Prototype) where T : MWidget
+        public static void RegistWidget<T>(LifeTime lifeTime = LifeTime.Sington) where T : MWidget
         {
             RegistComponent<T>(lifeTime);
         }

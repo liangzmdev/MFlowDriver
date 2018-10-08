@@ -16,6 +16,10 @@
         /// <param name="isBottom">是否位于页面底层</param>
         public void ShowWidget(bool isBottom = false)
         {
+            if (this.Parent == null)
+            {
+                return;
+            }
             OnShowWidget();
             if (!isBottom)
             {
