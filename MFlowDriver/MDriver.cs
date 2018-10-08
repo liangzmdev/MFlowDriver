@@ -1,10 +1,10 @@
-﻿using System;
+﻿using MFlowDriver.Component;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace MFlowDriver
 {
@@ -15,10 +15,11 @@ namespace MFlowDriver
     {
         private static MFlow flow = null;
         private static MPageElement currentPageEle;
-        private static Panel container = null;
+        private static Window window = null;
+        private static MContainer container = null;
         private static string mainPageName = string.Empty;
         private static LinkedList<string> pageHistories = new LinkedList<string>();
-        private static List<Tuple<string, Type, object>> components = new List<Tuple<string, Type, object>>();
+        private static List<ComponentMetadata> components = new List<ComponentMetadata>();
 
         /// <summary>
         /// 倒计时事件
@@ -39,14 +40,20 @@ namespace MFlowDriver
         }
 
         /// <summary>
+        /// 计时器开关
+        /// </summary>
+        public static bool TimerEnabled { get; set; } = true;
+
+        /// <summary>
         /// 流程驱动初始化
         /// </summary>
-        /// <param name="container">流程容器</param>
+        /// <param name="window">Window</param>
         /// <param name="flow">页面流程</param>
         /// <param name="mainPageName">流程主页面</param>
-        public static void Init(Panel container, MFlow flow, string mainPageName)
+        public static void Init(Window window, MFlow flow, string mainPageName)
         {
-            MDriver.container = container;
+            MDriver.window = window;
+            MDriver.container = new MContainer(window);
             MDriver.flow = flow;
             MDriver.mainPageName = mainPageName;
             InitAllPage();
@@ -62,6 +69,7 @@ namespace MFlowDriver
             flow.AllPages.ForEach(e =>
             {
                 var page = Activator.CreateInstance(e.PageType) as MPage;
+                page.Container = container;
                 page.CurrentPage = e;
                 page.PartFlowData = partFlowData;
                 page.GlobalFlowData = globalFlowData;
@@ -86,14 +94,10 @@ namespace MFlowDriver
 
         private static void RegistClickEvent()
         {
-            var window = container.GetTopElement();
-            if (window is UIElement element)
+            window.PreviewMouseDown += (sender, e) =>
             {
-                element.PreviewMouseDown += (sender, e) =>
-                {
-                    TimeCount = currentPageEle.Timeout;
-                };
-            }
+                TimeCount = currentPageEle.Timeout;
+            };
         }
 
         private static void StartTimer()
@@ -102,22 +106,33 @@ namespace MFlowDriver
             {
                 while (true)
                 {
-                    Thread.Sleep(1000);
-                    if (TimeCount == 0)
+                    if (TimerEnabled)
                     {
-                        GotoPageByPageName(mainPageName, false);
-                    }
-                    else if (TimeCount > 0)
-                    {
-                        TimeCount -= 1;
+                        Thread.Sleep(1000);
+                        if (TimeCount == 0)
+                        {
+                            GotoPageByPageName(mainPageName, false);
+                        }
+                        else if (TimeCount > 0)
+                        {
+                            TimeCount -= 1;
+                        }
                     }
                 }
             });
         }
 
+        /// <summary>
+        /// 重置计时器
+        /// </summary>
+        public static void ResetTimer()
+        {
+            TimeCount = currentPageEle.Timeout;
+        }
+
         private static void GotoPageByPageName(string pageName, bool isPreviousPage)
         {
-            container.Dispatcher.Invoke(() =>
+            window.Dispatcher.Invoke(() =>
             {
                 if (!flow.Has(pageName))
                 {
@@ -151,8 +166,8 @@ namespace MFlowDriver
 
                 currentPageEle = pageEle;
                 TimeCount = pageEle.Timeout;
-                container.Children.Clear();
-                container.Children.Add(pageEle.Instance);
+
+                container.AddPage(pageEle.Instance);
             });
         }
 
@@ -186,28 +201,55 @@ namespace MFlowDriver
         /// <summary>
         /// 注册组件
         /// </summary>
+        /// <typeparam name="T">组件类型</typeparam>
         /// <param name="component">组件实例</param>
         /// <param name="name">组件名称</param>
-        public static void RegistComponent(object component, string name = null)
+        public static void RegistComponent<T>(T component, string name = null) where T : class
         {
-            if (components.Any(e => e.Item1 == name && name != null))
+            if (components.Any(e => e.Name == name && name != null))
             {
                 throw MFlowException.Of("存在同名组件");
             }
 
             if (name == null)
             {
-                var cpn = components.Where(e => e.Item2 == component.GetType());
+                var cpn = components.Where(e => e.Type == component.GetType());
                 if (cpn.Any())
                 {
                     components.Remove(cpn.First());
                 }
-                components.Add(new Tuple<string, Type, object>(null, component.GetType(), component));
+                components.Add(new ComponentMetadata() { Instance = component, Type = component.GetType(), LifeTime = LifeTime.Sington });
             }
             else
             {
-                components.Add(new Tuple<string, Type, object>(name, component.GetType(), component));
+                components.Add(new ComponentMetadata() { Name = name, Instance = component, Type = component.GetType(), LifeTime = LifeTime.Sington });
             }
+        }
+
+        /// <summary>
+        /// 注册组件
+        /// </summary>
+        /// <typeparam name="T">组件类型</typeparam>
+        /// <param name="lifeTime">生命周期</param>
+        public static void RegistComponent<T>(LifeTime lifeTime = LifeTime.Sington) where T : class
+        {
+            var componentType = typeof(T);
+            var cpn = components.Where(e => e.Type == componentType);
+            if (cpn.Any())
+            {
+                components.Remove(cpn.First());
+            }
+            components.Add(new ComponentMetadata() { Type = componentType, LifeTime = lifeTime });
+        }
+
+        /// <summary>
+        /// 注册Widget
+        /// </summary>
+        /// <typeparam name="T">Widget类型</typeparam>
+        /// <param name="lifeTime">生命周期</param>
+        public static void RegistWidget<T>(LifeTime lifeTime = LifeTime.Prototype) where T : MWidget
+        {
+            RegistComponent<T>(lifeTime);
         }
 
         /// <summary>
@@ -216,10 +258,34 @@ namespace MFlowDriver
         /// <typeparam name="T">组件类型</typeparam>
         /// <param name="name">组件名称</param>
         /// <returns>组件实例</returns>
-        public static T GetComponent<T>(string name = null)
+        public static T GetComponent<T>(string name = null) where T : class
         {
-            var cpn = components.Where(e => e.Item1 == name && e.Item2 == typeof(T)).LastOrDefault();
-            return cpn != null ? (T)cpn.Item3 : default(T);
+            var cpn = components.Where(e => e.Name == name && e.Type == typeof(T)).LastOrDefault();
+            if (cpn != null)
+            {
+                T instance = null;
+                if (cpn.LifeTime == LifeTime.Sington)
+                {
+                    instance = cpn.Instance == null ? (T)Activator.CreateInstance(cpn.Type) : (T)cpn.Instance;
+                    cpn.Instance = instance;
+                }
+                else if (cpn.LifeTime == LifeTime.Prototype)
+                {
+                    instance = (T)Activator.CreateInstance(cpn.Type);
+                }
+
+                if (typeof(MWidget).IsAssignableFrom(cpn.Type))
+                {
+                    var widget = instance as MWidget;
+                    widget.Container = container;
+                }
+
+                return instance;
+            }
+            else
+            {
+                return default(T);
+            }
         }
     }
 }

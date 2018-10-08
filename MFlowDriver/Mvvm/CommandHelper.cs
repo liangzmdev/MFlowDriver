@@ -9,7 +9,7 @@ namespace MFlowDriver.Mvvm
     /// </summary>
     public class CommandHelper
     {
-        private static RoutedEventHandler routedEventHandler = new RoutedEventHandler(OnEventRaised);
+        private static readonly RoutedEventHandler routedEventHandler = new RoutedEventHandler(OnEventRaised);
 
         private static void OnEventRaised(object sender, RoutedEventArgs arg)
         {

@@ -1,70 +1,50 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
-using System.Windows.Controls;
-
-namespace MFlowDriver
+﻿namespace MFlowDriver
 {
     /// <summary>
     /// MWidget
     /// </summary>
-    public class MWidget : UserControl, INotifyPropertyChanged
+    public class MWidget : MNotifyUserControl
     {
-        private readonly Dictionary<string, object> fieldsDict = new Dictionary<string, object>();
+        /// <summary>
+        /// 容器
+        /// </summary>
+        public MContainer Container { get; set; }
 
         /// <summary>
-        /// PropertyChanged
+        /// 显示Widget
         /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary>
-        /// OnPropertyChanged
-        /// </summary>
-        /// <param name="propertyName">propertyName</param>
-        protected void OnPropertyChanged(string propertyName)
+        /// <param name="isBottom">是否位于页面底层</param>
+        public void ShowWidget(bool isBottom = false)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        /// <summary>
-        /// 获取属性值
-        /// </summary>
-        /// <typeparam name="T">属性类型</typeparam>
-        /// <param name="propertyName">属性名称</param>
-        /// <returns></returns>
-        protected T GetProperty<T>(string propertyName)
-        {
-            T value = default(T);
-            if (propertyName != null && fieldsDict.ContainsKey(propertyName))
+            OnShowWidget();
+            if (!isBottom)
             {
-                value = (T)fieldsDict[propertyName];
+                Container.AddBeforeContainer(this);
             }
-            return value;
+            else
+            {
+                Container.AddAfterContainer(this);
+            }
         }
 
         /// <summary>
-        /// 设置属性值
+        /// 显示Widget时调用
         /// </summary>
-        /// <typeparam name="T">属性值类型</typeparam>
-        /// <param name="propertyName">属性名称</param>
-        /// <param name="value">属性值</param>
-        protected void SetProperty<T>(string propertyName, T value)
+        public virtual void OnShowWidget() { }
+
+        /// <summary>
+        /// 关闭Widget
+        /// </summary>
+        public void CloseWidget()
         {
-            fieldsDict[propertyName] = value;
-            OnPropertyChanged(propertyName);
+            Container.RemoveTopPanel(this);
+            Container.RemoveBottomPanel(this);
+            OnCloseWidget();
         }
 
         /// <summary>
-        /// 初始化命令
+        /// 关闭Widget时调用
         /// </summary>
-        public virtual void InitCommands() { }
-
-        /// <summary>
-        /// MWidget Constructor
-        /// </summary>
-        public MWidget()
-        {
-            InitCommands();
-            DataContext = this;
-        }
+        public virtual void OnCloseWidget() { }
     }
 }

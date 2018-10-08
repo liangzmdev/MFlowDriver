@@ -46,12 +46,15 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Component\ComponentMetadata.cs" />
+    <Compile Include="MContainer.cs" />
     <Compile Include="MExtentions.cs" />
     <Compile Include="MDriver.cs" />
     <Compile Include="MFlow.cs" />
     <Compile Include="MFlowData.cs" />
     <Compile Include="MFlowDict.cs" />
     <Compile Include="MFlowException.cs" />
+    <Compile Include="MNotifyUserControl.cs" />
     <Compile Include="MPageElement.cs" />
     <Compile Include="MPage.cs" />
     <Compile Include="Mvvm\CommandHelper.cs" />

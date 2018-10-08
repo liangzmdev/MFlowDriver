@@ -5,8 +5,13 @@ namespace MFlowDriver
     /// <summary>
     /// MPage
     /// </summary>
-    public class MPage : MWidget
+    public class MPage : MNotifyUserControl
     {
+        /// <summary>
+        /// 容器
+        /// </summary>
+        public MContainer Container { get; set; }
+
         /// <summary>
         /// 当前页面元素
         /// </summary>
@@ -74,9 +79,62 @@ namespace MFlowDriver
         /// <typeparam name="T">组件类型</typeparam>
         /// <param name="name">组件名称</param>
         /// <returns>组件实例</returns>
-        public T GetComponent<T>(string name = null)
+        public T GetComponent<T>(string name = null) where T : class
         {
             return MDriver.GetComponent<T>(name);
+        }
+
+        /// <summary>
+        /// 暂停计时器
+        /// </summary>
+        public void PauseTimer()
+        {
+            MDriver.TimerEnabled = false;
+        }
+
+        /// <summary>
+        /// 恢复计时器
+        /// </summary>
+        public void RegainTimer()
+        {
+            MDriver.TimerEnabled = true;
+        }
+
+        /// <summary>
+        /// 重置计时器
+        /// </summary>
+        public void ResetTimer()
+        {
+            MDriver.ResetTimer();
+        }
+
+        /// <summary>
+        /// 显示指定Widget到上层
+        /// </summary>
+        /// <param name="isBottom">是否显示到底层</param>
+        /// <returns>MWidget</returns>
+        public MWidget ShowWidget<T>(bool isBottom = false) where T : MWidget
+        {
+            var widget = GetComponent<T>();
+            widget.ShowWidget(isBottom);
+            return widget;
+        }
+
+        /// <summary>
+        /// 关闭Widget
+        /// </summary>
+        public void CloseWidget<T>() where T : MWidget
+        {
+            var widget = GetComponent<T>();
+            widget.CloseWidget();
+        }
+
+        /// <summary>
+        /// 移除所有Widget
+        /// </summary>
+        public void RemoveAllWidget()
+        {
+            Container.RemoveAllWidget();
         }
     }
 }
