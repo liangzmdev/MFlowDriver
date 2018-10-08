@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace MFlowDriver
 {
@@ -15,7 +16,7 @@ namespace MFlowDriver
     {
         private static MFlow flow = null;
         private static MPageElement currentPageEle;
-        private static Window window = null;
+        private static Panel rootPanel = null;
         private static MContainer container = null;
         private static string mainPageName = string.Empty;
         private static LinkedList<string> pageHistories = new LinkedList<string>();
@@ -47,13 +48,13 @@ namespace MFlowDriver
         /// <summary>
         /// 流程驱动初始化
         /// </summary>
-        /// <param name="window">Window</param>
+        /// <param name="rootPanel">容器</param>
         /// <param name="flow">页面流程</param>
         /// <param name="mainPageName">流程主页面</param>
-        public static void Init(Window window, MFlow flow, string mainPageName)
+        public static void Init(Panel rootPanel, MFlow flow, string mainPageName)
         {
-            MDriver.window = window;
-            MDriver.container = new MContainer(window);
+            MDriver.rootPanel = rootPanel;
+            MDriver.container = new MContainer(rootPanel);
             MDriver.flow = flow;
             MDriver.mainPageName = mainPageName;
             InitAllPage();
@@ -94,10 +95,14 @@ namespace MFlowDriver
 
         private static void RegistClickEvent()
         {
-            window.PreviewMouseDown += (sender, e) =>
+            var window = rootPanel.GetTopElement();
+            if (window is UIElement element)
             {
-                TimeCount = currentPageEle.Timeout;
-            };
+                element.PreviewMouseDown += (sender, e) =>
+                {
+                    TimeCount = currentPageEle.Timeout;
+                };
+            }
         }
 
         private static void StartTimer()
@@ -132,7 +137,7 @@ namespace MFlowDriver
 
         private static void GotoPageByPageName(string pageName, bool isPreviousPage)
         {
-            window.Dispatcher.Invoke(() =>
+            rootPanel.Dispatcher.Invoke(() =>
             {
                 if (!flow.Has(pageName))
                 {

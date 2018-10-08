@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Windows;
 using System.Windows.Controls;
 
 namespace MFlowDriver
@@ -16,18 +15,15 @@ namespace MFlowDriver
         /// <summary>
         /// MContainer
         /// </summary>
-        /// <param name="window">窗口</param>
-        public MContainer(Window window)
+        /// <param name="container">容器</param>
+        public MContainer(Panel container)
         {
-            var container = new Grid();
             pagePanel = new Grid();
             topPanel = new Grid();
             bottomPanel = new Grid();
             container.Children.Add(bottomPanel);
             container.Children.Add(pagePanel);
             container.Children.Add(topPanel);
-
-            window.Content = container;
         }
 
         /// <summary>
@@ -101,7 +97,7 @@ namespace MFlowDriver
         /// <summary>
         /// 清除所有Widget
         /// </summary>
-        public void RemoveAllWidget()
+        public void RemoveAllWidgets()
         {
             var allWidgets = new List<MWidget>();
             foreach (MWidget widget in bottomPanel.Children)

@@ -132,9 +132,9 @@ namespace MFlowDriver
         /// <summary>
         /// 移除所有Widget
         /// </summary>
-        public void RemoveAllWidget()
+        public void RemoveAllWidgets()
         {
-            Container.RemoveAllWidget();
+            Container.RemoveAllWidgets();
         }
     }
 }
