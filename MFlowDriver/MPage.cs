@@ -111,12 +111,13 @@ namespace MFlowDriver
         /// <summary>
         /// 显示指定Widget到上层
         /// </summary>
+        /// <param name="data">数据</param>
         /// <param name="isBottom">是否显示到底层</param>
         /// <returns>MWidget</returns>
-        public T ShowWidget<T>(bool isBottom = false) where T : MWidget
+        public T ShowWidget<T>(object data = null, bool isBottom = false) where T : MWidget
         {
             var widget = GetComponent<T>();
-            widget.ShowWidget(isBottom);
+            widget.ShowWidget(data, isBottom);
             return widget;
         }
 
@@ -133,10 +134,10 @@ namespace MFlowDriver
         /// <summary>
         /// 关闭Widget
         /// </summary>
-        public void CloseWidget<T>() where T : MWidget
+        public void CloseWidget<T>(object data = null) where T : MWidget
         {
             var widget = GetComponent<T>();
-            widget.CloseWidget();
+            widget.CloseWidget(data);
         }
 
         /// <summary>
