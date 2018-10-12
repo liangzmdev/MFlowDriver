@@ -258,6 +258,16 @@ namespace MFlowDriver
         }
 
         /// <summary>
+        /// 获取Widget
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static T GetWidget<T>() where T : class
+        {
+            return GetComponent<T>();
+        }
+
+        /// <summary>
         /// 获取组件
         /// </summary>
         /// <typeparam name="T">组件类型</typeparam>
