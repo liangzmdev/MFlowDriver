@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 
@@ -90,6 +91,20 @@ namespace MFlowDriver.Mvvm
                 if (eventNameArr.Length > 1)
                 {
                     routedEvent = events.FirstOrDefault(ev => ev.Name == eventNameArr[1]);
+                    if (routedEvent == null)
+                    {
+                        var evName = eventNameArr[0];
+                        if (evName.Contains(":"))
+                        {
+                            evName = evName.Split(':')[1];
+                        }
+                        var type = evName.GetClassType();
+                        if (type != null)
+                        {
+                            Activator.CreateInstance(type);
+                            routedEvent = EventManager.GetRoutedEvents().FirstOrDefault(ev => ev.Name == eventNameArr[1]);
+                        }
+                    }
                 }
                 else
                 {
