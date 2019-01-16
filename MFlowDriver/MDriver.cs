@@ -41,6 +41,16 @@ namespace MFlowDriver
         }
 
         /// <summary>
+        /// 是否是主页面
+        /// </summary>
+        public bool IsMainPage { get => CurrentPageName == mainPageName; }
+
+        /// <summary>
+        /// 当前页面名称
+        /// </summary>
+        public string CurrentPageName { get => currentPageEle.Name; }
+
+        /// <summary>
         /// 计时器开关
         /// </summary>
         public static bool TimerEnabled { get; set; } = true;

@@ -13,7 +13,7 @@ namespace MFlowDriver
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
         /// <returns></returns>
-        public T GetVaue<T>(string key)
+        public T GetValue<T>(string key)
         {
             return ContainsKey(key) ? (T)this[key] : default(T);
         }

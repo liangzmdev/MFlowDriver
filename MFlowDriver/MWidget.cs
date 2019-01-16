@@ -35,7 +35,7 @@
         /// <summary>
         /// 显示Widget时调用
         /// </summary>
-        public virtual void OnShowWidget(object data) { }
+        protected virtual void OnShowWidget(object data) { }
 
         /// <summary>
         /// 关闭Widget
@@ -51,6 +51,6 @@
         /// <summary>
         /// 关闭Widget时调用
         /// </summary>
-        public virtual void OnCloseWidget(object data) { }
+        protected virtual void OnCloseWidget(object data) { }
     }
 }
