@@ -85,13 +85,21 @@ namespace MFlowDriver
                 page.PartFlowData = partFlowData;
                 page.GlobalFlowData = globalFlowData;
 
-                page.GotoPreviousPage = () =>
+                page.GotoPreviousPageByNum = (num) =>
                 {
-                    if (pageHistories.Count > 1)
+                    if (pageHistories.Count > num)
                     {
-                        GotoPageByPageName(pageHistories.Last.Previous.Value, true);
+                        var previousName = mainPageName;
+                        for (int i = 0; i < num; i++)
+                        {
+                            previousName = pageHistories.Last.Previous.Value;
+                            pageHistories.RemoveLast();
+                        }
+                        GotoPageByPageName(previousName, true);
                     }
                 };
+
+                page.GotoPreviousPage = () => page.GotoPreviousPageByNum(1);
 
                 page.GotoNextPage = identityName => GotoPageByIdentityName(identityName, e);
                 page.GotoSuccessPage = () => GotoPageByIdentityName(MFlow.IDNENTITY_NAME_SUCCESS, e);
@@ -169,10 +177,6 @@ namespace MFlowDriver
                     if (!isPreviousPage)
                     {
                         pageHistories.AddLast(pageName);
-                    }
-                    else
-                    {
-                        pageHistories.RemoveLast();
                     }
                 }
 
