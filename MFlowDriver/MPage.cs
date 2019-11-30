@@ -33,6 +33,11 @@ namespace MFlowDriver
         public Action GotoPreviousPage { get; set; }
 
         /// <summary>
+        /// 定位之前的页面
+        /// </summary>
+        public Action<int> GotoPreviousPageByNum { get; set; }
+
+        /// <summary>
         /// 定位下一个页面
         /// </summary>
         public Action<string> GotoNextPage { get; set; }
